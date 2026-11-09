@@ -43,8 +43,8 @@ Add the dependencies to your app module:
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.bhrapratik.composeprofiler:profiler:0.1.1")
-    releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.1")
+    debugImplementation("io.github.bhrapratik.composeprofiler:profiler:0.1.2")
+    releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.2")
 }
 ```
 
