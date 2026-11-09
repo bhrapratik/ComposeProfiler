@@ -1,107 +1,111 @@
-# Compose Profiler (source)
+# Compose Profiler
 
-Private source for [Compose Profiler](https://github.com/bhrapratik/ComposeProfiler), an on-device performance overlay for Jetpack Compose.
+An on-device performance overlay for **Jetpack Compose**. See frame timing, jank and recomposition counts live in your app, without opening the Android Studio profiler.
 
-The public repo contains only the README, docs, a sample project and the compiled artifacts (`maven/`). This repo contains the source.
+<p align="center">
+  <img src="docs/demo.gif" width="320" alt="Compose Profiler overlay in the sample app"/>
+</p>
 
-## Modules
+## Features
 
-| Module | Artifact | Purpose |
-|---|---|---|
-| `profiler` | `io.github.bhrapratik.composeprofiler:profiler` | The real profiler. Obfuscated with R8 on release. |
-| `profiler-noop` | `io.github.bhrapratik.composeprofiler:profiler-noop` | Same public API, empty implementations, for release builds. |
-| `sample` | not published | Demo app using the modules directly. |
+- **Frame metrics:** FPS, total and slow frames, average and latest frame time, measured against the device's real refresh rate
+- **Frame-time chart:** the last 90 frames, colored green (on time), amber (late) and red (jank)
+- **Recomposition counts:** per composable, with one line of code
+- **Component sizes:** in dp and px
+- **Draggable overlay:** a floating FPS bubble that expands into a panel
+- **Zero release overhead:** a no-op artifact with the same API keeps your release build clean
 
-Public API (everything else is `internal`):
+## Requirements
 
-- `ComposeProfiler { content }`
-- `TrackRecompositions(name)`
-- `Modifier.trackSize(name)`
+| | Version |
+|---|---|
+| Kotlin | 2.0 or newer |
+| minSdk | 23 |
+| UI | Jetpack Compose |
 
-## Folder layout
+## Setup
 
-The public repo must be cloned next to this one, because publishing writes into `../ComposeProfiler/maven`:
+Add the repository to `settings.gradle.kts`:
 
-```
-ComposeProfiler/
-├── ComposeProfiler/        public repo (README, CHANGELOG, docs, sample, maven/)
-└── ComposeProfiler-src/    this repo
-```
-
-## Release a new version
-
-Always run git commands from the repo root, not from a subfolder like `sample/`.
-
-**In this repo (`ComposeProfiler-src`):**
-
-1. Set `VERSION_NAME` in `gradle.properties`.
-2. Build and test the sample (debug and release).
-3. Commit and push.
-4. Publish into the public repo:
-```bash
-   ./gradlew clean publishAllPublicationsToPublicRepoRepository
-```
-5. Check the stdlib version in the `.pom` (must be 2.0.21):
-```bash
-   grep -A1 "kotlin-stdlib" ../ComposeProfiler/maven/io/github/bhrapratik/composeprofiler/profiler/<version>/profiler-<version>.pom
-```
-6. Check the obfuscation:
-```bash
-   rm -rf /tmp/aar && mkdir -p /tmp/aar
-   unzip -o -q ../ComposeProfiler/maven/io/github/bhrapratik/composeprofiler/profiler/<version>/profiler-<version>.aar -d /tmp/aar
-   unzip -o -q /tmp/aar/classes.jar -d /tmp/aar/classes
-   find /tmp/aar/classes -name "*.class"
-```
-   Only `ComposeProfilerKt` and `TrackingKt` keep their names. Everything else is `a`, `b`, `c`…
-
-**In the public repo (`ComposeProfiler`):**
-
-7. Update the version in `README.md`, `CHANGELOG.md` (newest on top) and `sample/app/build.gradle.kts`.
-8. Push **without** a tag (the sample downloads from GitHub, so the files must be online first):
-```bash
-   git add -A
-   git commit -m "Release <version>"
-   git push origin main
-```
-9. Check it's online (can take 1–2 minutes):
-```bash
-   curl -s https://raw.githubusercontent.com/bhrapratik/ComposeProfiler/main/maven/io/github/bhrapratik/composeprofiler/profiler/<version>/profiler-<version>.pom | head -2
-```
-10. Sync and run the sample: debug shows the overlay, release has no overlay.
-11. Tag:
-```bash
-    git tag <version>
-    git push origin --tags
-```
-
-## Build notes
-
-- **Keep rules:** `profiler/src/main/keepRules/rules.keep` keeps the public API and Kotlin metadata. It is referenced explicitly in `proguardFiles(...)`, because it was not picked up automatically.
-- **Empty `classes.jar`:** the keep rules were not applied, so R8 removed everything as unused.
-- **Kotlin compatibility:** both library modules use:
 ```kotlin
-  kotlin {
-      explicitApi()
-      coreLibrariesVersion = "2.0.21"
-      compilerOptions {
-          languageVersion.set(KotlinVersion.KOTLIN_2_0)
-          apiVersion.set(KotlinVersion.KOTLIN_2_0)
-      }
-  }
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://raw.githubusercontent.com/bhrapratik/ComposeProfiler/main/maven")
+    }
+}
 ```
-  `languageVersion`/`apiVersion` alone are not enough: without `coreLibrariesVersion`, the `.pom` requires the newest `kotlin-stdlib`, and apps on older Kotlin fail with "compiled with an incompatible version of Kotlin". The "language version 2.0 is deprecated" warning is expected. When Kotlin removes 2.0 support, move to 2.2 and update the public README.
-- **Sample release crash:** do not use `optimization { packageScope = ... }` from the project template. It caused an `IllegalAccessError` in Kotlin stdlib classes at startup.
-- **No sources jar:** `singleVariant("release")` without `withSourcesJar()`, so source is never published.
-- **Never commit:** `local.properties`, `maven/`, recordings (`*.mp4`), `.DS_Store`.
+
+Add the dependencies to your app module:
+
+```kotlin
+dependencies {
+    debugImplementation("io.github.bhrapratik.composeprofiler:profiler:0.1.2")
+    releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.2")
+}
+```
+
+## Usage
+
+Wrap your content:
+
+```kotlin
+setContent {
+    ComposeProfiler {
+        MyAppTheme { MyApp() }
+    }
+}
+```
+
+Track the composables you care about:
+
+```kotlin
+@Composable
+fun BalanceCard(balance: Int) {
+    TrackRecompositions("BalanceCard")                       // counts (re)compositions
+    Card(Modifier.trackSize("BalanceCard")) { /* ... */ }    // reports measured size
+}
+```
+
+Tap the FPS bubble to open the panel. Use **Reset** between test runs.
+
+## Sample project
+
+The [`sample`](sample) folder is a standalone Android project that uses the published library. It shows four classic Compose performance problems, each with a **Slow / Fixed** switch:
+
+| Demo | Problem | Fix |
+|---|---|---|
+| Unstable parameters | new unstable instances every recomposition | `remember` |
+| Scroll state reads | reading scroll offset in composition | `derivedStateOf` |
+| Heavy work in composition | sorting 100k items on every recomposition | `remember(key)` |
+| Animation state reads | animated value read in composition | lambda `Modifier.offset { }` |
+
+### Run it
+
+1. Clone the repo:
+```bash
+   git clone https://github.com/bhrapratik/ComposeProfiler.git
+```
+2. In Android Studio, open the **`sample`** folder (not the repo root).
+3. Run the `app` configuration on a device or emulator.
+   - **debug** build: the profiler overlay is shown
+   - **release** build: uses `profiler-noop`, no overlay
+
+Switch a demo between **Slow** and **Fixed**, then compare the frame chart and recomposition counts in the panel.
+
+## Limitations
+
+- Debug tool only. Use the `profiler-noop` artifact for release builds.
+- Recomposition tracking is opt-in per composable.
+- Measures the activity window that hosts `ComposeProfiler`. Dialogs and popups have their own windows and aren't included.
 
 ## Versions
 
-| Version | Change |
-|---|---|
-| 0.1.0 | First release |
-| 0.1.1 | Compiled for Kotlin 2.0 compatibility |
-| 0.1.2 | Depends on kotlin-stdlib 2.0.21 |
+Latest: **0.1.2**. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-Copyright 2026 Pratik Behera. All rights reserved.
+Copyright 2026 Pratik Behera. Licensed under the [Apache License 2.0](LICENSE).
+
+The library is distributed as compiled artifacts. Source is available on request.
