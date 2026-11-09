@@ -20,7 +20,7 @@ An on-device performance overlay for **Jetpack Compose**. See frame timing, jank
 | | Version |
 |---|---|
 | Kotlin | 2.4 or newer |
-| minSdk | 26 |
+| minSdk | 23 |
 | UI | Jetpack Compose |
 
 Your app's Kotlin version must be 2.4 or newer. With an older version, the build fails with an "incompatible version of Kotlin" error.
