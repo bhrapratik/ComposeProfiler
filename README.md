@@ -19,11 +19,11 @@ An on-device performance overlay for **Jetpack Compose**. See frame timing, jank
 
 | | Version |
 |---|---|
-| Kotlin | 2.4 or newer |
+| Kotlin | 2.0 or newer |
 | minSdk | 23 |
 | UI | Jetpack Compose |
 
-Your app's Kotlin version must be 2.4 or newer. With an older version, the build fails with an "incompatible version of Kotlin" error.
+Your app's Kotlin version must be 2.0 or newer. With an older version, the build fails with an "incompatible version of Kotlin" error.
 
 ## Setup
 
@@ -43,8 +43,8 @@ Add the dependencies to your app module:
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.bhrapratik.composeprofiler:profiler:0.1.0")
-    releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.0")
+    debugImplementation("io.github.bhrapratik.composeprofiler:profiler:0.1.1")
+    releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.1")
 }
 ```
 

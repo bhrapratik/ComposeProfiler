@@ -1,0 +1,94 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.bhrapratik.composeprofiler",
+    "module": "profiler-noop",
+    "version": "0.1.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "profiler-noop-0.1.1.aar",
+          "url": "profiler-noop-0.1.1.aar",
+          "size": 4820,
+          "sha512": "0dfd9668cf850592fc0abc9b62b794f964178fd0defe5ff7f5a74703caeb02d39d3fec7a06365ae81b1b31f504f3c2f6dcf75e40dac6981a58790796bf800add",
+          "sha256": "a92ee8ac434ae57627ebd1a2f736389c1406467c4717d169bc7e17bbf43917f0",
+          "sha1": "f595018af79d2399d18235068c870df6537bf07b",
+          "md5": "0af07a05c5c824f852464c0cf3dfed20"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.compose",
+          "module": "compose-bom",
+          "version": {
+            "requires": "2026.09.00"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui"
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "profiler-noop-0.1.1.aar",
+          "url": "profiler-noop-0.1.1.aar",
+          "size": 4820,
+          "sha512": "0dfd9668cf850592fc0abc9b62b794f964178fd0defe5ff7f5a74703caeb02d39d3fec7a06365ae81b1b31f504f3c2f6dcf75e40dac6981a58790796bf800add",
+          "sha256": "a92ee8ac434ae57627ebd1a2f736389c1406467c4717d169bc7e17bbf43917f0",
+          "sha1": "f595018af79d2399d18235068c870df6537bf07b",
+          "md5": "0af07a05c5c824f852464c0cf3dfed20"
+        }
+      ]
+    }
+  ]
+}
