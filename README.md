@@ -15,6 +15,16 @@ An on-device performance overlay for **Jetpack Compose**. See frame timing, jank
 - **Draggable overlay:** a floating FPS bubble that expands into a panel
 - **Zero release overhead:** a no-op artifact with the same API keeps your release build clean
 
+## Requirements
+
+| | Version |
+|---|---|
+| Kotlin | 2.4 or newer |
+| minSdk | 26 |
+| UI | Jetpack Compose |
+
+Your app's Kotlin version must be 2.4 or newer. With an older version, the build fails with an "incompatible version of Kotlin" error.
+
 ## Setup
 
 Add the repository to `settings.gradle.kts`:
@@ -29,7 +39,7 @@ dependencyResolutionManagement {
 }
 ```
 
-Add the dependencies:
+Add the dependencies to your app module:
 
 ```kotlin
 dependencies {
@@ -37,8 +47,6 @@ dependencies {
     releaseImplementation("io.github.bhrapratik.composeprofiler:profiler-noop:0.1.0")
 }
 ```
-
-Requires minSdk 23 and Jetpack Compose.
 
 ## Usage
 
@@ -64,9 +72,9 @@ fun BalanceCard(balance: Int) {
 
 Tap the FPS bubble to open the panel. Use **Reset** between test runs.
 
-## Sample app
+## Sample project
 
-The [`sample`](sample) project shows four classic Compose performance problems, each with a **Slow / Fixed** switch:
+The [`sample`](sample) folder is a standalone Android project that uses the published library. It shows four classic Compose performance problems, each with a **Slow / Fixed** switch:
 
 | Demo | Problem | Fix |
 |---|---|---|
@@ -74,6 +82,19 @@ The [`sample`](sample) project shows four classic Compose performance problems, 
 | Scroll state reads | reading scroll offset in composition | `derivedStateOf` |
 | Heavy work in composition | sorting 100k items on every recomposition | `remember(key)` |
 | Animation state reads | animated value read in composition | lambda `Modifier.offset { }` |
+
+### Run it
+
+1. Clone the repo:
+```bash
+   git clone https://github.com/bhrapratik/ComposeProfiler.git
+```
+2. In Android Studio, open the **`sample`** folder (not the repo root).
+3. Run the `app` configuration on a device or emulator.
+   - **debug** build: the profiler overlay is shown
+   - **release** build: uses `profiler-noop`, no overlay
+
+Switch a demo between **Slow** and **Fixed**, then compare the frame chart and recomposition counts in the panel.
 
 ## Limitations
 
